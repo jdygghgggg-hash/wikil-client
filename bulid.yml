@@ -1,0 +1,33 @@
+name: Build mod JAR
+
+on:
+  push: # Автоматический запуск при пуше
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Ручной запуск из интерфейса GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code # 1. Скачать твой код
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 8 # 2. Настроить Java 8 (для Minecraft 1.8.9)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Make gradlew executable # 3. Дать права на запуск
+        run: chmod +x gradlew
+
+      - name: Build with Gradle # 4. Запустить сборку!
+        run: ./gradlew build
+
+      - name: Upload JAR as artifact # 5. Сохранить результат
+        uses: actions/upload-artifact@v3
+        with:
+          name: TriggerBot-JAR
+          path: build/libs/*.jar
